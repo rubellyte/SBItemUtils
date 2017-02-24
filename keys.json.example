@@ -1,0 +1,6 @@
+// An example for the keys.json file used for encryption
+// Format: "shortdescription": "key"
+{
+  "A Weapon's Name (Case-Sensitive)": "The Encryption Key (Case Sensitive)",
+  "Another Weapon": "Corresponding Key"
+}
