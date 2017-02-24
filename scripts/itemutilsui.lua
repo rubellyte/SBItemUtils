@@ -4,9 +4,11 @@ itemUtilsUI = {}
 
 IUUI = itemUtilsUI
 
-IUUI.item_directory = "Replace me with the path to your save directory!"
+IUUI.mod_directory = "D:/Steam/steamapps/common/Starbound/mods/ItemUtils"
 
-IUUI.item_file = "/item.json"
+IUUI.item_subdir = "/items/"
+
+IUUI.item_file = "item.json"
 
 IUUI.enc_ignores = {
   "animation",
@@ -52,7 +54,7 @@ function IUUI.init()
 end
 
 function IUUI.importItem()
-  local itemDescriptor = root.assetJson(IUUI.item_file)
+  local itemDescriptor = root.assetJson(IUUI.item_subdir..IUUI.item_file)
   player.giveItem(itemDescriptor)
 end
 
@@ -60,7 +62,7 @@ function IUUI.exportItem()
   local itemDescriptor = player.primaryHandItem()
   if itemDescriptor ~= nil then
     local towrite = sb.printJson(itemDescriptor, 2)
-    writefile = io.open(IUUI.item_directory..IUUI.item_file, "w")
+    writefile = io.open(IUUI.mod_directory..IUUI.item_subdir..IUUI.item_file, "w")
     if writefile ~= nil then
       writefile:write(towrite)
       writefile:close()
@@ -111,6 +113,6 @@ end
 
 function IUUI.updateItemFile()
   local file_name = widget.getText(IUUI.widgets.item_file_entry)
-  if not file_name or file_name == "" then file_name = "/item.json" end
+  if not file_name or file_name == "" then file_name = "item.json" end
   IUUI.item_file = file_name
 end

@@ -280,6 +280,10 @@ function Weapon:damageSource(damageConfig, damageArea, damageTimeout)
     else
       damagePoly = damageArea
     end
+    
+    if damageConfig.damageTeam then
+      damageTeam = util.mergeTable(activeItem.ownerTeam(), damageConfig.damageTeam)
+    end
 
     return {
       poly = damagePoly,
@@ -287,7 +291,7 @@ function Weapon:damageSource(damageConfig, damageArea, damageTimeout)
       damage = damage,
       trackSourceEntity = damageConfig.trackSourceEntity,
       sourceEntity = activeItem.ownerEntityId(),
-      team = damageConfig.damageTeam or activeItem.ownerTeam(),
+      team = damageTeam or activeItem.ownerTeam(),
       damageSourceKind = damageConfig.damageSourceKind,
       statusEffects = damageConfig.statusEffects,
       knockback = knockback or 0,
