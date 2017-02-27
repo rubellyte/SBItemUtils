@@ -2,7 +2,7 @@
   "name" : "ItemUtils",
   "friendlyName": "ItemUtils",
   "priority": 1,
-  "version": "Beta v0.1d",
+  "version": "Beta v0.1e",
   "author": "Jade a.k.a. Medeor",
   "description": "Edits to base weapon Lua files for more freedom in JSON.",
   "requires": [

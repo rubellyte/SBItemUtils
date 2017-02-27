@@ -21,6 +21,7 @@ function init()
   end
 
   self.weapon:init()
+
 end
 
 function update(dt, fireMode, shiftHeld)

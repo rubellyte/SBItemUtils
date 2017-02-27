@@ -63,18 +63,18 @@ function Weapon:init()
   self.attackTimer = 0
   self.aimAngle = 0
   self.aimDirection = 1
-  
-  config.getConfigParameter = config.getParameter
-  config.getParameter = function (key, default)
-    if Weapon.encrypted then
-      if Weapon.decryptedData[key] then
+  if Weapon.encrypted then
+    config.getConfigParameter = config.getParameter
+    config.getParameter = function (key, default)
+      sb.logInfo("%s, %s", key, default)
+      if Weapon.decryptedData[key] ~= nil then
         return Weapon.decryptedData[key]
       else
         return config.getConfigParameter(key, default)
       end
-    else return config.getConfigParameter(key, default) end
+    end
   end
-  
+
   animator.setGlobalTag("elementalType", self.elementalType or "")
 
   for _,ability in pairs(self.abilities) do
@@ -366,19 +366,31 @@ function getAbility(abilitySlot, abilityConfig)
 end
 
 function getPrimaryAbility()
-  local primaryAbilityConfig = config.getParameter("primaryAbility", {})
-  if Weapon.encrypted and Weapon.decryptedData.primaryAbility then
-    primaryAbilityConfig = util.mergeTable(primaryAbilityConfig, Weapon.decryptedData.primaryAbility)
+  local primaryAbilityConfig
+  if Weapon.encrypted then
+    primaryAbilityConfig = config.getParameter("primaryAbility", {})
+    local encPrimaryAbility = Weapon.decryptedData.primaryAbility
+    if encPrimaryAbility then
+      primaryAbilityConfig = util.mergeTable(primaryAbilityConfig, encPrimaryAbility)
+    end
+  else
+    primaryAbilityConfig = config.getParameter("primaryAbility", {})
   end
   return getAbility("primary", primaryAbilityConfig)
 end
 
 function getAltAbility()
-  local altAbilityConfig = config.getParameter("altAbility", {})
-  if Weapon.encrypted and Weapon.decryptedData.altAbility then
-    altAbilityConfig = util.mergeTable(altAbilityConfig, Weapon.decryptedData.altAbility)
+  local altAbilityConfig
+  if Weapon.encrypted then
+    altAbilityConfig = config.getParameter("altAbility", {})
+    local encAltAbility = Weapon.decryptedData.altAbility
+    if encAltAbility then
+      altAbilityConfig = util.mergeTable(altAbilityConfig, encAltAbility)
+    end
+  else
+    altAbilityConfig = config.getParameter("altAbility")
   end
-  if altAbilityConfig and #altAbilityConfig > 0 then
+  if altAbilityConfig then
     return getAbility("alt", altAbilityConfig)
   end
 end
