@@ -5,12 +5,11 @@ require "/scripts/util.lua"
 Hitscan = WeaponAbility:new()
 
 function Hitscan:init()
-  self.damageConfig.baseDamage = self.baseDps * self.fireTime
+  self.damageConfig.baseDamage = self:damagePerShot()
 
   self.weapon:setStance(self.stances.idle)
 
   self.cooldownTimer = self.fireTime
-  self.impactSoundTimer = 0
 
   self.weapon.onLeaveAbility = function()
     self.weapon:setDamage()
@@ -23,7 +22,6 @@ function Hitscan:update(dt, fireMode, shiftHeld)
   WeaponAbility.update(self, dt, fireMode, shiftHeld)
 
   self.cooldownTimer = math.max(0, self.cooldownTimer - self.dt)
-  self.impactSoundTimer = math.max(self.impactSoundTimer - self.dt, 0)
   
   if animator.animationState("firing") ~= "fire" then
     animator.setLightActive("muzzleFlash", false)
@@ -41,13 +39,10 @@ end
 
 function Hitscan:fire()
   self.weapon:setStance(self.stances.fire)
-
-  local wasColliding = false
   
   self.beamStart = self:firePosition()
-  self.beamEnd = vec2.add(self.beamStart, vec2.mul(vec2.norm(self:aimVector(0)), self.beamLength))
-  self.beamFinalLength = self.beamLength
-  sb.logInfo("%s\n%s", self.beamStart, self.beamEnd)
+  self.beamEnd = vec2.add(self.beamStart, vec2.mul(vec2.norm(self:aimVector(self.inaccuracy or 0)), self.maxLength))
+  self.beamLength = self.maxLength
 
   self.collidePoint = world.lineCollision(self.beamStart, self.beamEnd)
   if not self.piercing then
@@ -65,19 +60,12 @@ function Hitscan:fire()
   end
   if self.collidePoint then
     self.beamEnd = self.collidePoint
-
-    self.beamFinalLength = world.magnitude(self.beamStart, self.beamEnd)
-
-    animator.resetTransformationGroup("beamEnd")
-    animator.translateTransformationGroup("beamEnd", {self.beamFinalLength, 0})
-
-    if self.impactSoundTimer == 0 then
-      self.impactSoundTimer = self.fireTime
-    end
+    self.beamLength = world.magnitude(self.beamStart, self.beamEnd)
   end
 
-  self.weapon:setDamage(self.damageConfig, {self.weapon.muzzleOffset, {self.weapon.muzzleOffset[1] + self.beamFinalLength, self.weapon.muzzleOffset[2]}}, self.fireTime)
+  self.weapon:setOwnerDamage(self.damageConfig, {vec2.sub(self.beamStart, mcontroller.position()), vec2.sub(self.beamEnd, mcontroller.position())}, self.fireTime)
   self:fireProjectile(self.beamEnd)
+  status.overConsumeResource("energy", self.energyUsage or 0)
   util.wait(0.03)
 
   self:muzzleFlash()
@@ -146,15 +134,17 @@ function Hitscan:muzzleFlash()
 end
 
 function Hitscan:fireProjectile(pos)
-  local params = copy(self.projectileParameters)
-  params.power = self:damagePerShot()
-  params.powerMultiplier = activeItem.ownerPowerMultiplier()
-  world.spawnProjectile(self.projectileType,
-                        pos, 
-                        activeItem.ownerEntityId(), 
-                        self:aimVector(0), 
-                        false, 
-                        params)
+  if self.projectileType then
+    local params = copy(self.projectileParameters) or {}
+    params.power = self:damagePerShot()
+    params.powerMultiplier = activeItem.ownerPowerMultiplier()
+    world.spawnProjectile(self.projectileType,
+                          pos, 
+                          activeItem.ownerEntityId(), 
+                          self:aimVector(0), 
+                          false, 
+                          params)
+  end
 end
 
 function Hitscan:uninit()
@@ -167,5 +157,5 @@ function Hitscan:reset()
 end
 
 function Hitscan:damagePerShot()
-  return (self.baseDamage or (self.baseDps * self.fireTime)) * (self.baseDamageMultiplier or 1.0) * config.getParameter("damageLevelMultiplier") / self.projectileCount
+  return (self.baseDamage or (self.baseDps * self.fireTime)) * (self.baseDamageMultiplier or 1.0) * config.getParameter("damageLevelMultiplier")
 end
