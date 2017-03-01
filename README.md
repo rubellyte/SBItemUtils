@@ -56,3 +56,13 @@ Most of these options are self-explanatory. However, `"transform"` is special; i
   - Minimum required orbs for shield `"minimumShieldOrbs"`
   - Spacing between shield parts `"shieldSpaceFactor"`
   - Multiple projectile types/configs: A `"projectileTypes"` array can be specified, containing an object for each orb. This object can contain a `"type"` and `"parameters"`. Missing `"type"`s and `"parameters"`s will be filled in with `"projectileType"` and `"projectileParameters"` respectively.
+  
+- Hitscan gun script parameters:
+  - `"damageConfig"` controls the type of damage and knockback dealt, much like a melee weapon
+  - `"maxLength"` controls the maximum effective range of the weapon
+  - `"tracer"` specifies a beam to use as a bullet trail
+  - `"projectileType"` specifies a projectile to spawn at the beam's impact point
+  - `"projectileParameters"` specifies parameters for said projectile
+  - `"piercing"` controls whether or not the shot will stop after hitting a target
+  - Inherited from base gun: `"baseDps"`, `"baseDamage"`, `"baseDamageMultiplier"`, `"inaccuracy"`, `"energyUsage"`, `"fireTime"`
+  
