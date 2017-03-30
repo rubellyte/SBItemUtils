@@ -6,22 +6,29 @@ require "/scripts/activeitem/stances.lua"
 
 function init()
   if config.getParameter("encrypted") then
-    local encryptedData = config.getParameter("encryptedData")
-    local keys = root.assetJson("/keys.json")
-    local keyname = config.getParameter("shortdescription")
-    if not keyname then
-      sb.logInfo("%s", root.itemConfig(world.entityHandItemDescriptor(activeItem.ownerEntityId(), activeItem.hand())))
-      keyname = root.itemConfig(world.entityHandItemDescriptor(activeItem.ownerEntityId(), activeItem.hand())).config.shortdescription
-    end
     if keys[keyname] then
-      self.decryptedData = rc4.decrypt(b64dec(config.getParameter("encryptedData")), true, keys[keyname])
+      self.decryptedData = rc4.decrypt(unhexlify(encryptedData), true, keys[keyname])
       if not self.decryptedData then
-        sb.logError("ItemUtils: Decryption for item \"%s\" with key \"%s\" failed!", keyname, keys[keyname])
+        error(string.format("ItemUtils: Decryption for item \"%s\" with key \"%s\" failed!", keyname, keys[keyname]))
         return
       end
-    else
-      sb.logError("ItemUtils: Key not found for item \"%s\"!", keyname)
-      return
+      if self.decryptedData.animationParts then
+        for part, image in pairs(self.decryptedData.animationParts) do
+          animator.setPartTag(part, "partImage", image)
+        end
+      end
+      if self.decryptedData.inventoryIcon then
+        if type(self.decryptedData.inventoryIcon) == "string" then
+          if string.sub(self.decryptedData.inventoryIcon, 1, 1) == "/" then
+            activeItem.setInventoryIcon(self.decryptedData.inventoryIcon)
+          else
+            local directory = root.itemConfig(world.entityHandItemDescriptor(activeItem.ownerEntityId(), activeItem.hand())).directory
+            activeItem.setInventoryIcon(directory..self.decryptedData.inventoryIcon)
+          end
+        end
+      end
+    else 
+      error(string.format("ItemUtils: Key not found for item \"%s\"!", keyname))
     end
     config.getConfigParameter = config.getParameter
     config.getParameter = function (key, default)

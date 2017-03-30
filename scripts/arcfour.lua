@@ -19,6 +19,7 @@ function rc4.decrypt(encrypted, is_table, key)
   dec_state:generate(3072)
   plaintext = dec_state:cipher(encrypted)
   local success
+  sb.logInfo("%s", plaintext)
   if is_table then
     local func = load("return "..plaintext)
     if not func then
@@ -35,73 +36,62 @@ function rc4.decrypt(encrypted, is_table, key)
   return plaintext
 end
 
-function table.val_to_str ( v )
-  if "string" == type( v ) then
-    v = string.gsub( v, "\n", "\\n" )
-    if string.match( string.gsub(v,"[^'\"]",""), '^"+$' ) then
-      return "'" .. v .. "'"
+function table.val_to_str(v)
+  if "string" == type(v) then
+    v = string.gsub(v, "\n", "\\n")
+    if string.match(string.gsub(v, "[^'\"]", ""), '^"+$') then
+      return "'".. v .."'"
     end
-    return '"' .. string.gsub(v,'"', '\\"' ) .. '"'
+    return '"'..string.gsub(v, '"', '\\"')..'"'
   else
-    return "table" == type( v ) and table.tostring( v ) or
-      tostring( v )
+    return "table" == type(v) and table.tostring(v) or tostring(v)
   end
 end
 
-function table.key_to_str ( k )
-  if "string" == type( k ) and string.match( k, "^[_%a][_%a%d]*$" ) then
+function table.key_to_str(k)
+  if "string" == type(k) and string.match(k, "^[_%a][_%a%d]*$") then
     return k
   else
-    return "[" .. table.val_to_str( k ) .. "]"
+    return "["..table.val_to_str(k).."]"
   end
 end
 
-function table.tostring( tbl )
+function table.tostring(tbl)
   local result, done = {}, {}
-  for k, v in ipairs( tbl ) do
-    table.insert( result, table.val_to_str( v ) )
-    done[ k ] = true
+  for k, v in ipairs(tbl) do
+    table.insert(result, table.val_to_str(v))
+    done[k] = true
   end
-  for k, v in pairs( tbl ) do
-    if not done[ k ] then
-      table.insert( result,
-        table.key_to_str( k ) .. "=" .. table.val_to_str( v ) )
+  for k, v in pairs(tbl) do
+    if not done[k] then
+      table.insert(result, table.key_to_str(k).."="..table.val_to_str(v))
     end
   end
-  return "{" .. table.concat( result, "," ) .. "}"
+  return "{"..table.concat(result, ",").."}"
 end
 
--- character table string
-local b='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-
 -- encoding
-function b64enc(data)
-    return ((data:gsub('.', function(x) 
-        local r,b='',x:byte()
-        for i=8,1,-1 do r=r..(b%2^i-b%2^(i-1)>0 and '1' or '0') end
-        return r;
-    end)..'0000'):gsub('%d%d%d?%d?%d?%d?', function(x)
-        if (#x < 6) then return '' end
-        local c=0
-        for i=1,6 do c=c+(x:sub(i,i)=='1' and 2^(6-i) or 0) end
-        return b:sub(c+1,c+1)
-    end)..({ '', '==', '=' })[#data%3+1])
+function hexlify(data)
+  local final = ""
+  for i = 1,data:len() do
+    byte = string.format("%X", string.byte(string.sub(data, i)))
+    if(string.len(hex) == 0)then
+      hex = '00'
+    elseif(string.len(hex) == 1)then
+      hex = '0' .. hex
+    end
+    final = final..byte
+  end
+  return final
 end
 
 -- decoding
-function b64dec(data)
-    data = string.gsub(data, '[^'..b..'=]', '')
-    return (data:gsub('.', function(x)
-        if (x == '=') then return '' end
-        local r,f='',(b:find(x)-1)
-        for i=6,1,-1 do r=r..(f%2^i-f%2^(i-1)>0 and '1' or '0') end
-        return r;
-    end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
-        if (#x ~= 8) then return '' end
-        local c=0
-        for i=1,8 do c=c+(x:sub(i,i)=='1' and 2^(8-i) or 0) end
-        return string.char(c)
-    end))
+function unhexlify(data)
+  local final = ""
+  for i = 1,data:len(),2 do
+    final = final..string.char(tonumber(string.sub(data, i, i+1), 16))
+  end
+  return final
 end
 
 -- ARCFOUR implementation in pure Lua

@@ -100,7 +100,7 @@ function IUUI.encryptItem()
       end
     end
     local encrypted = rc4.encrypt(to_encrypt, key)
-    encrypted = b64enc(encrypted)
+    encrypted = hexlify(encrypted)
     local finalItem = {name = itemDescriptor.name, count = itemDescriptor.count, parameters = {encrypted = true, encryptedData = encrypted}}
     for _, ignore in ipairs(IUUI.enc_ignores) do
       if itemDescriptor.parameters[ignore] then

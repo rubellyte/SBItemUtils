@@ -9,10 +9,7 @@ function Weapon:new(weaponConfig)
   local newWeapon = weaponConfig or {}
   local encryptedData = config.getParameter("encryptedData")
   local keys = root.assetJson("/keys.json")
-  local keyname = config.getParameter("shortdescription")
-  if not keyname then
-    keyname = root.itemConfig(world.entityHandItemDescriptor(activeItem.ownerEntityId(), activeItem.hand())).config.shortdescription
-  end
+  local keyname = item.friendlyName()
   newWeapon.damageLevelMultiplier = config.getParameter("damageLevelMultiplier", root.evalFunction("weaponDamageLevelMultiplier", config.getParameter("level", 1)))
   newWeapon.elementalType = config.getParameter("elementalType")
   newWeapon.muzzleOffset = config.getParameter("muzzleOffset") or {0,0}
@@ -20,9 +17,9 @@ function Weapon:new(weaponConfig)
   newWeapon.handGrip = config.getParameter("handGrip", "inside")
   if config.getParameter("encrypted") then
     if keys[keyname] then
-      local decryptedData = rc4.decrypt(b64dec(encryptedData), true, keys[keyname])
+      local decryptedData = rc4.decrypt(unhexlify(encryptedData), true, keys[keyname])
       if not decryptedData then
-        sb.logError("ItemUtils: Decryption for item \"%s\" with key \"%s\" failed!", keyname, keys[keyname])
+        error(string.format("ItemUtils: Decryption for item \"%s\" with key \"%s\" failed!", keyname, keys[keyname]))
         return
       end
       newWeapon.damageLevelMultiplier = decryptedData.damageLevelMultiplier or newWeapon.damageLevelMultiplier
@@ -49,8 +46,8 @@ function Weapon:new(weaponConfig)
           end
         end
       end
-    else
-      sb.logError("ItemUtils: Key not found for item \"%s\"!", keyname)
+    else 
+      error(string.format("ItemUtils: Key not found for item \"%s\"!", keyname))
     end
   end
   newWeapon.abilities = {}
@@ -66,7 +63,6 @@ function Weapon:init()
   if Weapon.encrypted then
     config.getConfigParameter = config.getParameter
     config.getParameter = function (key, default)
-      sb.logInfo("%s, %s", key, default)
       if Weapon.decryptedData[key] ~= nil then
         return Weapon.decryptedData[key]
       else
