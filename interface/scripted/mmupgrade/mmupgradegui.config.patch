@@ -1,196 +1,228 @@
 [
-  {
-    "op": "add",
-    "path": "/packages/-",
-    "value": {
-      "activator": "btnIUUI",
-      "show": [
-        "IUUIImport",
-        "IUUIExport",
-        "IUUIDupe",
-        "IUUIEncrypt",
-        "IUUIItemFileEntryBg",
-        "IUUIItemFileEntry",
-        "IUUIKeyEntry",
-        "IUUIKeyEntryBg"
-      ],
-      "hide": [],
-      "settingsEnabled": false,
-      "name": "itemUtilsUI",
-      "script": "/scripts/itemutilsui.lua"
+  [
+    {
+      "op": "test",
+      "path": "/canvasClickCallbacks",
+      "inverse": true
+    },
+    {
+      "op": "add",
+      "path": "/canvasClickCallbacks",
+      "value": {}
     }
-  },
-  {
-    "op": "add",
-    "path": "/gui/btnIUUI",
-    "value": {
-      "type": "button",
-      "base": "/resources/UIActivator.png",
-      "hover": "/resources/UIActivator.png?brightness=60",
-      "caption": "Open ItemUtils UI",
-      "fontSize": 7,
-      "wrapWidth": 80,
-      "hAnchor": "mid",
-      "pressedOffset": [0,-1],
-      "position": [102,103],
-      "data": "itemUtilsUI",
-      "callback": "showInterface"
+  ],
+  [
+    {
+      "op": "add",
+      "path": "/packages/-",
+      "value": {
+        "activator": "btnIUUI",
+        "show": [
+          "IUUIImport",
+          "IUUIExport",
+          "IUUIDupe",
+          "IUUIEncrypt",
+          "IUUIItemFileEntryBg",
+          "IUUIItemFileEntry",
+          "IUUIKeyEntry",
+          "IUUIKeyEntryBg",
+          "IUUIPlayerInfo"
+        ],
+        "hide": [],
+        "settingsEnabled": false,
+        "name": "itemUtilsUI",
+        "script": "/scripts/itemutilsui.lua"
+      }
+    },
+    {
+      "op": "add",
+      "path": "/gui/btnIUUI",
+      "value": {
+        "type": "button",
+        "base": "/resources/UIActivator.png",
+        "hover": "/resources/UIActivator.png?brightness=60",
+        "caption": "Open ItemUtils UI",
+        "fontSize": 7,
+        "wrapWidth": 80,
+        "hAnchor": "mid",
+        "pressedOffset": [0,-1],
+        "position": [102,103],
+        "data": "itemUtilsUI",
+        "callback": "showInterface"
+      }
+    },
+    {
+      "op": "add",
+      "path": "/gui/IUUIImport",
+      "value": {
+        "type": "button",
+        "base": "/interface/button.png",
+        "hover": "/interface/buttonhover.png",
+        "caption": "Import Item",
+        "fontSize": 7,
+        "wrapWidth": 80,
+        "hAnchor": "mid",
+        "zLevel": 25,
+        "pressedOffset": [0,-1],
+        "position": [282, 22],
+        "visible": false,
+        "callback": "IUUI.importItem"
+      }
+    },
+    {
+      "op": "add",
+      "path": "/gui/IUUIExport",
+      "value": {
+        "type": "button",
+        "base": "/interface/button.png",
+        "hover": "/interface/buttonhover.png",
+        "caption": "Export Held",
+        "fontSize": 7,
+        "wrapWidth": 80,
+        "hAnchor": "mid",
+        "zLevel": 25,
+        "pressedOffset": [0,-1],
+        "position": [228, 22],
+        "visible": false,
+        "callback": "IUUI.exportItem"
+      }
+    },
+    {
+      "op": "add",
+      "path": "/gui/IUUIDupe",
+      "value": {
+        "type": "button",
+        "base": "/interface/button.png",
+        "hover": "/interface/buttonhover.png",
+        "caption": "Dupe Held",
+        "fontSize": 7,
+        "wrapWidth": 80,
+        "hAnchor": "mid",
+        "zLevel": 25,
+        "pressedOffset": [0,-1],
+        "position": [174, 22],
+        "visible": false,
+        "callback": "IUUI.dupeItem"
+      }
+    },
+    {
+      "op": "add",
+      "path": "/gui/IUUIEncrypt",
+      "value": {
+        "type": "button",
+        "base": "/interface/button.png",
+        "hover": "/interface/buttonhover.png",
+        "caption": "Encrypt Held",
+        "fontSize": 7,
+        "wrapWidth": 80,
+        "hAnchor": "mid",
+        "zLevel": 25,
+        "pressedOffset": [0,-1],
+        "position": [174, 54],
+        "visible": false,
+        "callback": "IUUI.encryptItem"
+      }
+    },
+    {
+      "op": "add",
+      "path": "/gui/IUUIItemFileEntryBg",
+      "value": {
+        "type": "image",
+        "position": [172,38],
+        "file": "/assetMissing.png?replace;FFFFFF00=000000FF?scalenearest;2.53125;0.15625?border=1;E6E6E6FF;EFF",
+        "zLevel": 15,
+        "visible": false
+      }
+    },
+    {
+      "op": "add",
+      "path": "/gui/IUUIItemFileEntry",
+      "value": {
+        "type": "textbox",
+        "position": [174,40],
+        "textAlign": "left",
+        "hint": "item.json",
+        "callback": "IUUI.updateItemFile",
+        "zLevel": 16,
+        "maxWidth": 162,
+        "visible": false
+      }
+    },
+    {
+      "op": "add",
+      "path": "/gui/IUUIKeyEntryBg",
+      "value": {
+        "type": "image",
+        "position": [172,70],
+        "file": "/assetMissing.png?replace;FFFFFF00=000000FF?scalenearest;2.53125;0.15625?border=1;E6E6E6FF;EFF",
+        "zLevel": 15,
+        "visible": false
+      }
+    },
+    {
+      "op": "add",
+      "path": "/gui/IUUIKeyEntry",
+      "value": {
+        "type": "textbox",
+        "position": [174,72],
+        "textAlign": "left",
+        "hint": "Encryption Key",
+        "zLevel": 16,
+        "maxWidth": 162,
+        "visible": false
+      }
+    },
+    {
+      "op": "add",
+      "path": "/gui/IUUIPlayerInfo",
+      "value": {
+        "zLevel": 1,
+        "type": "canvas",
+        "rect": [1, 22, 336, 219],
+        "captureMouseEvents": true,
+        "captureKeyboardEvents": false,
+        "visible": false
+      }
+    },
+    {
+      "op": "add",
+      "path": "/canvasClickCallbacks/IUUIPlayerInfo",
+      "value": "IUUI.canvasClickEvent"
+    },
+    {
+      "op": "add",
+      "path": "/scriptWidgetCallbacks/-",
+      "value": "mui.back"
+    },
+    {
+    	"op": "add",
+    	"path": "/scriptWidgetCallbacks/-",
+    	"value": "IUUIKeyEntry"
+    },
+    {
+      "op": "add",
+      "path": "/scriptWidgetCallbacks/-",
+      "value": "IUUI.importItem"
+    },
+    {
+      "op": "add",
+      "path": "/scriptWidgetCallbacks/-",
+      "value": "IUUI.exportItem"
+    },
+    {
+      "op": "add",
+      "path": "/scriptWidgetCallbacks/-",
+      "value": "IUUI.dupeItem"
+    },
+    {
+    	"op": "add",
+    	"path": "/scriptWidgetCallbacks/-",
+    	"value": "IUUI.encryptItem"
+    },
+    {
+      "op": "add",
+      "path": "/scriptWidgetCallbacks/-",
+      "value": "IUUI.updateItemFile"
     }
-  },
-  {
-    "op": "add",
-    "path": "/gui/IUUIImport",
-    "value": {
-      "type": "button",
-      "base": "/interface/button.png",
-      "hover": "/interface/buttonhover.png",
-      "caption": "Import Item",
-      "fontSize": 7,
-      "wrapWidth": 80,
-      "hAnchor": "mid",
-      "zLevel": 25,
-      "pressedOffset": [0,-1],
-      "position": [282, 22],
-      "visible": false,
-      "callback": "IUUI.importItem"
-    }
-  },
-  {
-    "op": "add",
-    "path": "/gui/IUUIExport",
-    "value": {
-      "type": "button",
-      "base": "/interface/button.png",
-      "hover": "/interface/buttonhover.png",
-      "caption": "Export Held",
-      "fontSize": 7,
-      "wrapWidth": 80,
-      "hAnchor": "mid",
-      "zLevel": 25,
-      "pressedOffset": [0,-1],
-      "position": [228, 22],
-      "visible": false,
-      "callback": "IUUI.exportItem"
-    }
-  },
-  {
-    "op": "add",
-    "path": "/gui/IUUIDupe",
-    "value": {
-      "type": "button",
-      "base": "/interface/button.png",
-      "hover": "/interface/buttonhover.png",
-      "caption": "Dupe Held",
-      "fontSize": 7,
-      "wrapWidth": 80,
-      "hAnchor": "mid",
-      "zLevel": 25,
-      "pressedOffset": [0,-1],
-      "position": [174, 22],
-      "visible": false,
-      "callback": "IUUI.dupeItem"
-    }
-  },
-  {
-    "op": "add",
-    "path": "/gui/IUUIEncrypt",
-    "value": {
-      "type": "button",
-      "base": "/interface/button.png",
-      "hover": "/interface/buttonhover.png",
-      "caption": "Encrypt Held",
-      "fontSize": 7,
-      "wrapWidth": 80,
-      "hAnchor": "mid",
-      "zLevel": 25,
-      "pressedOffset": [0,-1],
-      "position": [174, 54],
-      "visible": false,
-      "callback": "IUUI.encryptItem"
-    }
-  },
-  {
-    "op": "add",
-    "path": "/gui/IUUIItemFileEntryBg",
-    "value": {
-      "type": "image",
-      "position": [172,38],
-      "file": "/assetMissing.png?replace;FFFFFF00=000000FF?scalenearest;2.53125;0.15625?border=1;E6E6E6FF;EFF",
-      "zLevel": 15,
-      "visible": false
-    }
-  },
-  {
-    "op": "add",
-    "path": "/gui/IUUIItemFileEntry",
-    "value": {
-      "type": "textbox",
-      "position": [174,40],
-      "textAlign": "left",
-      "hint": "item.json",
-      "callback": "IUUI.updateItemFile",
-      "zLevel": 16,
-      "maxWidth": 162,
-      "visible": false
-    }
-  },
-  {
-    "op": "add",
-    "path": "/gui/IUUIKeyEntryBg",
-    "value": {
-      "type": "image",
-      "position": [172,70],
-      "file": "/assetMissing.png?replace;FFFFFF00=000000FF?scalenearest;2.53125;0.15625?border=1;E6E6E6FF;EFF",
-      "zLevel": 15,
-      "visible": false
-    }
-  },
-  {
-    "op": "add",
-    "path": "/gui/IUUIKeyEntry",
-    "value": {
-      "type": "textbox",
-      "position": [174,72],
-      "textAlign": "left",
-      "hint": "Encryption Key",
-      "zLevel": 16,
-      "maxWidth": 162,
-      "visible": false
-    }
-  },
-  {
-    "op": "add",
-    "path": "/scriptWidgetCallbacks/-",
-    "value": "mui.back"
-  },
-  {
-  	"op": "add",
-  	"path": "/scriptWidgetCallbacks/-",
-  	"value": "IUUIKeyEntry"
-  },
-  {
-    "op": "add",
-    "path": "/scriptWidgetCallbacks/-",
-    "value": "IUUI.importItem"
-  },
-  {
-    "op": "add",
-    "path": "/scriptWidgetCallbacks/-",
-    "value": "IUUI.exportItem"
-  },
-  {
-    "op": "add",
-    "path": "/scriptWidgetCallbacks/-",
-    "value": "IUUI.dupeItem"
-  },
-  {
-  	"op": "add",
-  	"path": "/scriptWidgetCallbacks/-",
-  	"value": "IUUI.encryptItem"
-  },
-  {
-    "op": "add",
-    "path": "/scriptWidgetCallbacks/-",
-    "value": "IUUI.updateItemFile"
-  }
+  ]
 ]

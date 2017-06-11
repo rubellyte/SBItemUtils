@@ -74,12 +74,7 @@ end
 function hexlify(data)
   local final = ""
   for i = 1,data:len() do
-    byte = string.format("%X", string.byte(string.sub(data, i)))
-    if(string.len(hex) == 0)then
-      hex = '00'
-    elseif(string.len(hex) == 1)then
-      hex = '0' .. hex
-    end
+    byte = string.format("%02X", string.byte(string.sub(data, i)))
     final = final..byte
   end
   return final

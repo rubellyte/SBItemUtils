@@ -168,7 +168,7 @@ function MechPartManager:buildVehicleParameters(itemSet, primaryColorIndex, seco
 
       primaryColorIndex = self:validateColorIndex(primaryColorIndex)
       secondaryColorIndex = self:validateColorIndex(secondaryColorIndex)
-      params.partDirectives[partType] = self:buildSwapDirectives(thisPartConfig, primaryColorIndex, secondaryColorIndex)
+      params.partDirectives[partType] = thisPartConfig.customDirectives or self:buildSwapDirectives(thisPartConfig, primaryColorIndex, secondaryColorIndex)
 
       params.partImages = util.mergeTable(params.partImages, thisPartConfig.partImages or {})
       params.damageSources = util.mergeTable(params.damageSources, thisPartConfig.damageSources or {})
