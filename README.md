@@ -6,14 +6,13 @@ Starbound ItemUtils mod: Vanilla-friendly extensions to weapon scripts.
 - If you don't already have it, install Silverfeelin's [Manipulated UI](https://github.com/Silverfeelin/Starbound-ManipulatedUI/releases); ItemUtils depends on it.
 
 ### Optional (but strongly recommended):
-- Set `safeScripts` in your `starbound.config` to `false` to enable item JSON exports.
-- Change `IUUI.mod_directory` in `/scripts/itemutilsui.lua` to the path of your ItemUtils directory (e.g. `"C:/Games/Starbound/mods/ItemUtils"`). Note: Use `/` to separate folders, *not* `\`.
-- Change `IUUI.item_subdir` in `/scripts/itemutilsui.lua` to a subdirectory of your mod folder, if you want to store the item files in a subdirectory. Note that this must both start and end with `/`.
+- Set `safeScripts` in your `starbound.config` to `false` to enable item JSON exports and faster importing.
+- Configure the file paths in the settings page of the ItemUtils UI (small gear icon in top right)
 - Increase the value of `luaInstructionLimit` in `starbound.config` to allow the encryption of more complex items. You'll know if this needs to be higher if your log contains `(LuaInstructionLimitReached)` errors.
 
 # Usage
 ### Item import/export/dupe:
-Open the ItemUtils MUI interface. Type a file name into the box (prefix with `/`!). The UI will attempt to read/write the JSON file by that name in the ItemUtils directory. The item exported/duplicated will be the one in your hand.
+Open the ItemUtils MUI interface. Type a file name into the box. The UI will attempt to read/write the JSON file by that name in the ItemUtils directory. The item exported/duplicated will be the one in your hand.
 
 ### Item encryption:
 Type in an encryption key for your weapon, and hit "Encrypt" to make an encrypted copy of your held weapon. Add the key you used to the `keys.json` file at the root of the ItemUtils folder (create it if it doesn't exist). See `keys.json.example` for formatting. **Important encryption note:** Your item's `"animationCustom"` *cannot* be encrypted! Store part images in `"animationParts"` if you don't want them stolen!
@@ -66,3 +65,11 @@ Most of these options are self-explanatory. However, `"transform"` is special; i
   - `"piercing"` controls whether or not the shot will stop after hitting a target
   - Inherited from base gun: `"baseDps"`, `"baseDamage"`, `"baseDamageMultiplier"`, `"inaccuracy"`, `"energyUsage"`, `"fireTime"`
   
+### Mech Script Changes
+The mech parts manager has been modified to accept custom part configurations. To use, simply add a `"partConfig"` object to a part item containing information in the same structure as the mech config file entries.
+
+Custom mech config will be merged with the part's default config. To avoid this behavior, change the part type to a non-existent one.
+
+In addition, custom directives can be specified for the part by adding a `"customDirectives"` string in the `"partConfig"` object.
+
+Finally, stats can be declared directly by adding them with the proper names to `"partParameters"`.
