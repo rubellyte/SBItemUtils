@@ -29,7 +29,17 @@
           "IUUIPlayerInfo"
         ],
         "hide": [],
-        "settingsEnabled": false,
+        "settingsEnabled": true,
+        "settingControls": [
+          "IUUIItemDirLabel",
+          "IUUIItemDir",
+          "IUUISubdirLabel",
+          "IUUISubdir",
+          "IUUIItemDirBg",
+          "IUUICanvasUpdateLabel",
+          "IUUICanvasUpdate",
+          "IUUICanvasUpdateBg"
+        ],
         "name": "itemUtilsUI",
         "script": "/scripts/itemutilsui.lua"
       }
@@ -186,6 +196,104 @@
     },
     {
       "op": "add",
+      "path": "/gui/IUUIItemDirLabel",
+      "value": {
+        "type": "label",
+        "position": [167, 175],
+        "hAnchor": "mid",
+        "vAnchor": "bottom",
+        "wrapWidth": 200,
+        "visible": false,
+        "value": "This value should be an absolute folder path pointing to where your item JSON files are located. It should end in a /."
+      }
+    },
+    {
+      "op": "add",
+      "path": "/gui/IUUIItemDir",
+      "value": {
+        "type": "textbox",
+        "position": [87, 155],
+        "textAlign": "left",
+        "hint": "C:/Wherever/Folder/",
+        "maxWidth": 160,
+        "callback": "IUUI.updateItemDir"
+      }
+    },
+    {
+      "op": "add",
+      "path": "/gui/IUUISubdirLabel",
+      "value": {
+        "type": "label",
+        "position": [167, 175],
+        "hAnchor": "mid",
+        "vAnchor": "bottom",
+        "wrapWidth": 200,
+        "visible": false,
+        "value": "This value should be a folder within your ItemUtils mod folder. It should both start and end with a /."
+      }
+    },
+    {
+      "op": "add",
+      "path": "/gui/IUUISubdir",
+      "value": {
+        "type": "textbox",
+        "position": [87, 155],
+        "zLevel": 16,
+        "textAlign": "left",
+        "hint": "/items/",
+        "maxWidth": 160,
+        "callback": "IUUI.updateSubdir"
+      }
+    },
+    {
+      "op": "add",
+      "path": "/gui/IUUIItemDirBg",
+      "value": {
+        "type": "image",
+        "position": [85, 153],
+        "file": "/assetMissing.png?replace;FFFFFF00=000000FF?scalenearest;2.5;0.15625?border=1;E6E6E6FF;EFF",
+        "zLevel": 15,
+        "visible": false
+      }
+    },
+    {
+      "op": "add",
+      "path": "/gui/IUUICanvasUpdateLabel",
+      "value": {
+        "type": "label",
+        "position": [87, 135],
+        "hAnchor": "left",
+        "visible": false,
+        "value": "Canvas update rate (per sec):"
+      }
+    },
+    {
+      "op": "add",
+      "path": "/gui/IUUICanvasUpdate",
+      "value": {
+        "type": "textbox",
+        "position": [212, 135],
+        "zLevel": 16,
+        "textAlign" : "center",
+        "maxWidth" : 16,
+        "regex" : "x?\\d{0,4}",
+        "hint": "60",
+        "callback": "IUUI.updateCanvasRate"
+      }
+    },
+    {
+      "op": "add",
+      "path": "/gui/IUUICanvasUpdateBg",
+      "value": {
+        "type": "image",
+        "position": [210, 133],
+        "file": "/assetMissing.png?replace;FFFFFF00=000000FF?scalenearest;0.25;0.15625?border=1;E6E6E6FF;EFF",
+        "zLevel": 15,
+        "visible": false
+      }
+    },
+    {
+      "op": "add",
       "path": "/canvasClickCallbacks/IUUIPlayerInfo",
       "value": "IUUI.canvasClickEvent"
     },
@@ -223,6 +331,21 @@
       "op": "add",
       "path": "/scriptWidgetCallbacks/-",
       "value": "IUUI.updateItemFile"
+    },
+    {
+      "op": "add",
+      "path": "/scriptWidgetCallbacks/-",
+      "value": "IUUI.updateItemDir"
+    },
+    {
+      "op": "add",
+      "path": "/scriptWidgetCallbacks/-",
+      "value": "IUUI.updateSubdir"
+    },
+    {
+      "op": "add",
+      "path": "/scriptWidgetCallbacks/-",
+      "value": "IUUI.updateCanvasRate"
     }
   ]
 ]

@@ -1,23 +1,20 @@
 require "/scripts/util.lua"
 require "/scripts/vec2.lua"
 require "/scripts/arcfour.lua"
+require "/scripts/JSON.lua"
+
 itemUtilsUI = {}
 
 IUUI = itemUtilsUI
 
--- the directory of the mod, absolute from top of disk
-IUUI.mod_directory = "D:/Steam/steamapps/common/Starbound/mods/ItemUtils"
+IUUI.itemDirectory = ""
 
--- the subdirectory of the mod folder in which you'll store JSON files
-IUUI.item_subdir = "/items/"
+IUUI.itemSubdir = ""
 
--- default item filename, don't touch
-IUUI.item_file = "item.json"
+IUUI.itemFile = "item.json"
 
--- value is in seconds, increase if you lag while IUUI is open
-IUUI.playerUpdateInterval = 0.0
+IUUI.playerUpdateInterval = 1 / 60
 
--- here there be code, no touchies unless you know what you're doing
 IUUI.enc_ignores = {
   "animation",
   "animationCustom",
@@ -48,15 +45,13 @@ IUUI.enc_scripts = {
   ["magnorbs.lua"] = "/itemscripts/magnorbs_plus.lua"
 }
 
-IUUI.widgets = {
-  item_file_entry = "IUUIItemFileEntry",
-  key_entry = "IUUIKeyEntry",
-  player_info_canvas = "IUUIPlayerInfo"
-}
-
 function IUUI.init()
   mui.setTitle("^shadow;ItemUtils UI", "^shadow;Import/export/dupe/encrypt items.")
-  if not io then
+  IUUI.useIo = not not io
+  IUUI.itemDirectory = status.statusProperty("IUUI.itemDirectory", "")
+  IUUI.itemSubdir = status.statusProperty("IUUI.itemSubdir", "")
+  IUUI.playerUpdateInterval = status.statusProperty("IUUI.playerUpdateInterval", 1/60)
+  if not IUUI.useIo then
     widget.setButtonEnabled("exportItem", false)
   end
   IUUI.updateItemFile()
@@ -72,38 +67,73 @@ function IUUI.update(dt)
   end
 end
 
+function IUUI.settingsOpened()
+  local turnOff = IUUI.useIo and {"IUUISubdirLabel", "IUUISubdir"} or {"IUUIItemDirLabel", "IUUIItemDir"}
+  for i, v in ipairs(turnOff) do
+    widget.setVisible(v, false)
+  end
+  widget.setText("IUUIItemDir", IUUI.itemDirectory)
+  widget.setText("IUUISubdir", IUUI.itemSubdir)
+  widget.setText("IUUICanvasUpdate", IUUI.playerUpdateInterval)
+end
+
 function IUUI.importItem()
-  local itemDescriptor = root.assetJson(IUUI.item_subdir..IUUI.item_file)
-  player.giveItem(itemDescriptor)
+  if IUUI.useIo then
+    if IUUI.itemDirectory == "" then
+      sb.logError("ItemUtils: Import failed, no item directory configured!")
+      return
+    end
+    local readfile = io.open(IUUI.itemDirectory..IUUI.itemFile, "r")
+    if readfile ~= nil then
+      local textData = readfile:read("*a")
+      local itemDescriptor = JSON:decode(textData)
+      readfile:close()
+      player.giveItem(itemDescriptor)
+    else
+      sb.logError("ItemUtils: Error opening import file; confirm that directory exists?\n File: %s%s", IUUI.itemDirectory, IUUI.itemFile)
+    end
+  else
+    if IUUI.itemSubdir == "" then
+      sb.logError("ItemUtils: No item subdirectory configured!")
+      return
+    end
+    local itemDescriptor = root.assetJson(IUUI.itemSubdir..IUUI.itemFile)
+    player.giveItem(itemDescriptor)
+  end
 end
 
 function IUUI.exportItem()
-  local itemDescriptor = player.primaryHandItem()
+  if IUUI.itemDirectory == "" then
+    sb.logError("ItemUtils: Export failed, no item directory configured!")
+    return
+  end
+  local itemDescriptor = player.swapSlotItem()
   if itemDescriptor ~= nil then
     local towrite = sb.printJson(itemDescriptor, 2)
-    writefile = io.open(IUUI.mod_directory..IUUI.item_subdir..IUUI.item_file, "w")
+    local writefile = io.open(IUUI.itemDirectory..IUUI.itemFile, "w")
     if writefile ~= nil then
       writefile:write(towrite)
       writefile:close()
+      pane.playSound("/sfx/interface/item_pickup.ogg")
     else
-      sb.logError("ItemUtils: Error opening export file; confirm that directory exists?\n Directory: %s", IUUI.item_directory)
+      sb.logError("ItemUtils: Error opening export file; confirm that directory exists?\n Directory: %s", IUUI.itemDirectory)
       return
     end
   end
 end
 
 function IUUI.dupeItem()
-  local itemDescriptor = player.primaryHandItem()
+  local itemDescriptor = player.swapSlotItem()
   if itemDescriptor ~= nil then
     player.giveItem(itemDescriptor)
   end
 end
 
 function IUUI.encryptItem()
-  local itemDescriptor = player.primaryHandItem() or player.altHandItem()
+  local itemDescriptor = player.swapSlotItem()
   local to_encrypt = copy(itemDescriptor.parameters)
   local item_config = root.itemConfig(itemDescriptor)
-  local key = widget.getText(IUUI.widgets.key_entry)
+  local key = widget.getText("IUUIKeyEntry")
   if to_encrypt and key then
     for _, ignore in ipairs(IUUI.enc_ignores) do
       if to_encrypt[ignore] then
@@ -131,13 +161,36 @@ function IUUI.encryptItem()
 end
 
 function IUUI.updateItemFile()
-  local file_name = widget.getText(IUUI.widgets.item_file_entry)
+  local file_name = widget.getText("IUUIItemFileEntry")
   if not file_name or file_name == "" then file_name = "item.json" end
-  IUUI.item_file = file_name
+  IUUI.itemFile = file_name
+end
+
+function IUUI.updateItemDir()
+  local path = widget.getText("IUUIItemDir")
+  if not path then path = "" end
+  IUUI.itemDirectory = path
+  status.setStatusProperty("IUUI.itemDirectory", path)
+end
+
+function IUUI.updateSubdir()
+  local path = widget.getText("IUUISubdir")
+  if not path then path = "" end
+  IUUI.itemSubdir = path
+  status.setStatusProperty("IUUI.itemSubdir", path)
+end
+
+function IUUI.updateCanvasRate()
+  local rate = widget.getText("IUUICanvasUpdate")
+  rate = tonumber(rate)
+  if not rate then rate = 60 end
+  rate = 1 / rate
+  IUUI.playerUpdateInterval = rate
+  status.setStatusProperty("IUUI.playerUpdateInterval", rate)
 end
 
 function IUUI.updatePlayerInfo()
-  local canvas = widget.bindCanvas(IUUI.widgets.player_info_canvas)
+  local canvas = widget.bindCanvas("IUUIPlayerInfo")
   canvas:clear()
   local sizeRect = {0, 0, canvas:size()[1], canvas:size()[2]}
   local playerRender = world.entityPortrait(player.id(), "full")
@@ -167,7 +220,6 @@ function IUUI.updatePlayerInfo()
 end
 
 function IUUI.canvasClickEvent(position, button, isButtonDown)
-  sb.logInfo("%s", position)
 end
 
 function lerpColor(percentage)
