@@ -45,6 +45,8 @@ IUUI.enc_scripts = {
   ["magnorbs.lua"] = "/itemscripts/magnorbs_plus.lua"
 }
 
+JSON.strictTypes = true
+
 function IUUI.init()
   mui.setTitle("^shadow;ItemUtils UI", "^shadow;Import/export/dupe/encrypt items.")
   IUUI.useIo = not not io

@@ -499,8 +499,8 @@ local OBJDEF = {
 local default_pretty_indent  = "  "
 local default_pretty_options = { pretty = true, align_keys = false, indent = default_pretty_indent  }
 
-local isArray  = {  }  isArray.__index  = isArray; isArray.__typehint = 1
-local isObject = {  }  isObject.__index = isObject
+local isArray  = getmetatable(jarray())
+local isObject = getmetatable(jobject())
 
 function OBJDEF:newArray(tbl)
    return setmetatable(tbl or {}, isArray)
