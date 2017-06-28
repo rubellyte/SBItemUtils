@@ -367,7 +367,7 @@ function getPrimaryAbility()
     primaryAbilityConfig = config.getParameter("primaryAbility", {})
     local encPrimaryAbility = Weapon.decryptedData.primaryAbility
     if encPrimaryAbility then
-      primaryAbilityConfig = util.mergeTable(primaryAbilityConfig, encPrimaryAbility)
+      primaryAbilityConfig = sb.jsonMerge(primaryAbilityConfig, encPrimaryAbility)
     end
   else
     primaryAbilityConfig = config.getParameter("primaryAbility", {})
@@ -378,10 +378,12 @@ end
 function getAltAbility()
   local altAbilityConfig
   if Weapon.encrypted then
-    altAbilityConfig = config.getParameter("altAbility", {})
+    altAbilityConfig = config.getParameter("altAbility")
     local encAltAbility = Weapon.decryptedData.altAbility
-    if encAltAbility then
-      altAbilityConfig = util.mergeTable(altAbilityConfig, encAltAbility)
+    if encAltAbility and altAbilityConfig then
+      altAbilityConfig = sb.jsonMerge(altAbilityConfig, encAltAbility)
+    elseif encAltAbility then
+      altAbilityConfig = encAltAbility
     end
   else
     altAbilityConfig = config.getParameter("altAbility")
