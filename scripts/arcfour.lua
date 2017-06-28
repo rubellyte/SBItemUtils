@@ -19,7 +19,6 @@ function rc4.decrypt(encrypted, is_table, key)
   dec_state:generate(3072)
   plaintext = dec_state:cipher(encrypted)
   local success
-  sb.logInfo("%s", plaintext)
   if is_table then
     local func = load("return "..plaintext)
     if not func then
