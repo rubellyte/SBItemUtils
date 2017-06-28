@@ -33,7 +33,8 @@ IUUI.enc_ignores = {
   "scripts",
   "animationScripts",
   "tooltipKind",
-  "tooltipFields"
+  "tooltipFields",
+  "seed"
 }
 
 IUUI.enc_scripts = {

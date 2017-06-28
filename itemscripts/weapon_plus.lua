@@ -64,7 +64,7 @@ function Weapon:init()
     config.getConfigParameter = config.getParameter
     config.getParameter = function (key, default)
       if Weapon.decryptedData[key] ~= nil then
-        return sb.mergeJson(config.getConfigParameter(key, default), Weapon.decryptedData[key])
+        return sb.jsonMerge(config.getConfigParameter(key, default), Weapon.decryptedData[key])
       else
         return config.getConfigParameter(key, default)
       end
