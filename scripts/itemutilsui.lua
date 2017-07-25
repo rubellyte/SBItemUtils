@@ -46,14 +46,18 @@ IUUI.enc_scripts = {
   ["magnorbs.lua"] = "/itemscripts/magnorbs_plus.lua"
 }
 
+
+IUUI.settingsOpen = false
+
 JSON.strictTypes = true
 
-function IUUI.init()
-  mui.setTitle("^shadow;ItemUtils UI", "^shadow;Import/export/dupe/encrypt items.")
+function init()
   IUUI.useIo = not not io
   IUUI.itemDirectory = status.statusProperty("IUUI.itemDirectory", "")
   IUUI.itemSubdir = status.statusProperty("IUUI.itemSubdir", "")
   IUUI.playerUpdateInterval = status.statusProperty("IUUI.playerUpdateInterval", 1/60)
+  IUUI.mainWidgets = config.getParameter("mainWidgets")
+  IUUI.settingsWidgets = config.getParameter("settingsWidgets")
   if not IUUI.useIo then
     widget.setButtonEnabled("exportItem", false)
   end
@@ -62,7 +66,7 @@ function IUUI.init()
   IUUI.updatePlayerInfo()
 end
 
-function IUUI.update(dt)
+function update(dt)
   IUUI.updateTimer = math.max(IUUI.updateTimer - dt, 0)
   if IUUI.updateTimer == 0 then
     IUUI.updateTimer = IUUI.playerUpdateInterval
@@ -70,14 +74,31 @@ function IUUI.update(dt)
   end
 end
 
-function IUUI.settingsOpened()
-  local turnOff = IUUI.useIo and {"IUUISubdirLabel", "IUUISubdir"} or {"IUUIItemDirLabel", "IUUIItemDir"}
-  for i, v in ipairs(turnOff) do
-    widget.setVisible(v, false)
+function IUUI.toggleSettings()
+  if IUUI.settingsOpen then
+    for i, v in ipairs(IUUI.mainWidgets) do
+      widget.setVisible(v, true)
+    end
+    for i, v in ipairs(IUUI.settingsWidgets) do
+      widget.setVisible(v, false)
+    end
+    IUUI.settingsOpen = false
+  else
+    local turnOff = IUUI.useIo and {"subdirLabel", "subdirBox"} or {"itemDirLabel", "itemDirBox"}
+    for i, v in ipairs(IUUI.mainWidgets) do
+      widget.setVisible(v, false)
+    end
+    for i, v in ipairs(IUUI.settingsWidgets) do
+      widget.setVisible(v, true)
+    end
+    for i, v in ipairs(turnOff) do
+      widget.setVisible(v, false)
+    end
+    widget.setText("IUUIItemDir", IUUI.itemDirectory)
+    widget.setText("IUUISubdir", IUUI.itemSubdir)
+    widget.setText("IUUICanvasUpdate", IUUI.playerUpdateInterval)
+    IUUI.settingsOpen = true
   end
-  widget.setText("IUUIItemDir", IUUI.itemDirectory)
-  widget.setText("IUUISubdir", IUUI.itemSubdir)
-  widget.setText("IUUICanvasUpdate", IUUI.playerUpdateInterval)
 end
 
 function IUUI.importItem()
@@ -136,7 +157,7 @@ function IUUI.encryptItem()
   local itemDescriptor = player.swapSlotItem()
   local to_encrypt = copy(itemDescriptor.parameters)
   local item_config = root.itemConfig(itemDescriptor)
-  local key = widget.getText("IUUIKeyEntry")
+  local key = widget.getText("keyEntryBox")
   if to_encrypt and key then
     for _, ignore in ipairs(IUUI.enc_ignores) do
       if to_encrypt[ignore] then
@@ -164,27 +185,27 @@ function IUUI.encryptItem()
 end
 
 function IUUI.updateItemFile()
-  local file_name = widget.getText("IUUIItemFileEntry")
+  local file_name = widget.getText("itemPathBox")
   if not file_name or file_name == "" then file_name = "item.json" end
   IUUI.itemFile = file_name
 end
 
 function IUUI.updateItemDir()
-  local path = widget.getText("IUUIItemDir")
+  local path = widget.getText("itemDirBox")
   if not path then path = "" end
   IUUI.itemDirectory = path
   status.setStatusProperty("IUUI.itemDirectory", path)
 end
 
 function IUUI.updateSubdir()
-  local path = widget.getText("IUUISubdir")
+  local path = widget.getText("itemSubdirBox")
   if not path then path = "" end
   IUUI.itemSubdir = path
   status.setStatusProperty("IUUI.itemSubdir", path)
 end
 
 function IUUI.updateCanvasRate()
-  local rate = widget.getText("IUUICanvasUpdate")
+  local rate = widget.getText("canvasUpdateBox")
   rate = tonumber(rate)
   if not rate then rate = 60 end
   rate = 1 / rate
@@ -193,7 +214,7 @@ function IUUI.updateCanvasRate()
 end
 
 function IUUI.updatePlayerInfo()
-  local canvas = widget.bindCanvas("IUUIPlayerInfo")
+  local canvas = widget.bindCanvas("playerInfo")
   canvas:clear()
   local sizeRect = {0, 0, canvas:size()[1], canvas:size()[2]}
   local playerRender = world.entityPortrait(player.id(), "full")
@@ -220,9 +241,6 @@ function IUUI.updatePlayerInfo()
   local playervel = world.entityVelocity(player.id())
   local velformat = string.format("^shadow;Velocity: %.0f X, %.0f Y", playervel[1], playervel[2])
   canvas:drawText(velformat, {position = {86, 61}}, 8, "white")
-end
-
-function IUUI.canvasClickEvent(position, button, isButtonDown)
 end
 
 function lerpColor(percentage)

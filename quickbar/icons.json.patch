@@ -1,0 +1,11 @@
+[
+  {
+    "op": "add",
+    "path": "/normal/-",
+    "value": {
+      "label": "ItemUtils UI",
+      "pane": "/interface/scripted/itemUtilsUI/itemUtilsUI.config",
+      "icon": "/interface/muibased/cog.png"
+    }
+  }
+]

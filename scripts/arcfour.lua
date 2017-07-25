@@ -92,33 +92,6 @@ end
 -- Copyright 2008 Rob Kendrick <rjek@rjek.com>
 -- Distributed under the MIT licence
 
-local function make_byte_table(bits)
-	local f = { }
-	for i = 0, 255 do
-		f[i] = { }
-	end
-	
-	f[0][0] = bits[1] * 255
-
-	local m = 1
-	
-	for k = 0, 7 do
-		for i = 0, m - 1 do
-			for j = 0, m - 1 do
-				local fij = f[i][j] - bits[1] * m
-				f[i  ][j+m] = fij + bits[2] * m
-				f[i+m][j  ] = fij + bits[3] * m
-				f[i+m][j+m] = fij + bits[4] * m
-			end
-		end
-		m = m * 2
-	end
-	
-	return f
-end
-
-local byte_xor = make_byte_table { 0, 1, 1, 0 }
-
 local function generate(self, count)
 	local S, i, j = self.S, self.i, self.j
 	local o = { }
@@ -142,7 +115,7 @@ local function cipher(self, plaintext)
 	local char = string.char
 	
 	for i = 1, #plaintext do
-		r[i] = char(byte_xor[byte(plaintext, i)][byte(pad, i)])
+    r[i] = char(byte(plaintext, i) ~ byte(pad, i))
 	end
 	
 	return table.concat(r)
