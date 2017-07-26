@@ -1,7 +1,7 @@
 require "/scripts/util.lua"
 require "/scripts/vec2.lua"
-require "/scripts/arcfour.lua"
 require "/scripts/JSON.lua"
+require "/scripts/cryptomanager.lua"
 
 itemUtilsUI = {}
 
@@ -172,15 +172,26 @@ function IUUI.encryptItem()
         itemDescriptor.parameters.scripts[i] = IUUI.enc_scripts[script]
       end
     end
-    local encrypted = rc4.encrypt(to_encrypt, key)
-    encrypted = hexlify(encrypted)
-    local finalItem = {name = itemDescriptor.name, count = itemDescriptor.count, parameters = {encrypted = true, encryptedData = encrypted}}
+    local encrypted = crypto.encrypt(to_encrypt, key)
+    local finalItem = {name = itemDescriptor.name, count = itemDescriptor.count, parameters = {encrypted = true, cryptoVersion = 3, encryptedData = encrypted}}
     for _, ignore in ipairs(IUUI.enc_ignores) do
       if itemDescriptor.parameters[ignore] then
         finalItem.parameters[ignore] = itemDescriptor.parameters[ignore]
       end
     end
     player.giveItem(finalItem)
+    if IUUI.useIo then
+      local keyPath = status.statusProperty("keyPath", "../mods/ItemUtils/keys.json")
+      local keyFile = io.open(keyPath, "r")
+      if keyFile then
+        local keys = JSON:decode(keyFile:read("*a"))
+        keyFile:close()
+        keys[finalItem.parameters.shortdescription] = key
+        keyFile = io.open(keyPath, "w")
+        keyFile:write(JSON:encode_pretty(keys))
+        keyFile:close()
+      end
+    end
   end
 end
 
