@@ -184,6 +184,11 @@ function IUUI.encryptItem()
   end
 end
 
+function IUUI.openKeyManager()
+  player.interact("ScriptPane", "/interface/scripted/keyManager/keyManager.config")
+  pane.dismiss()
+end
+
 function IUUI.updateItemFile()
   local file_name = widget.getText("itemPathBox")
   if not file_name or file_name == "" then file_name = "item.json" end

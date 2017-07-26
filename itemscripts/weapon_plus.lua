@@ -19,6 +19,9 @@ function Weapon:new(weaponConfig)
     if keys[keyname] then
       local decryptedData = rc4.decrypt(unhexlify(encryptedData), true, keys[keyname])
       if not decryptedData then
+        local interactData = root.assetJson("/interface/scripted/keyManager/keyManager.config")
+        interactData.openedBy = keyname
+        player.interact("ScriptPane", interactData)
         error(string.format("ItemUtils: Decryption for item \"%s\" with key \"%s\" failed!", keyname, keys[keyname]))
         return
       end
@@ -47,6 +50,9 @@ function Weapon:new(weaponConfig)
         end
       end
     else 
+      local interactData = root.assetJson("/interface/scripted/keyManager/keyManager.config")
+      interactData.openedBy = keyname
+      player.interact("ScriptPane", interactData)
       error(string.format("ItemUtils: Key not found for item \"%s\"!", keyname))
     end
   end
