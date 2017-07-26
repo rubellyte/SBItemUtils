@@ -28,6 +28,7 @@ end
 function kM.back()
   if kM.validPath then kM.writeKeys() end
   player.interact("ScriptPane", "/interface/scripted/itemUtilsUI/itemUtilsUI.config")
+  pane.dismiss()
 end
 
 function kM.updateKeyList()
