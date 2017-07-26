@@ -1,5 +1,7 @@
 require "/scripts/util.lua"
+require "/scripts/JSON.lua"
 require "/scripts/arcfour.lua"
+require "/scripts/cryptomanager.lua"
 
 -- handles weapon stances, animations, and abilities
 
@@ -8,7 +10,18 @@ Weapon = {}
 function Weapon:new(weaponConfig)
   local newWeapon = weaponConfig or {}
   local encryptedData = config.getParameter("encryptedData")
-  local keys = root.assetJson("/keys.json")
+  local keys
+  if io then
+    local keyPath = status.statusProperty("keyPath", "../mods/ItemUtils/keys.json")
+    local keyFile = io.open(keyPath, "r")
+    if keyFile then
+      keys = JSON:decode(keyFile:read("*a"))
+      keyFile:close()
+    else
+      sb.logWarn("ItemUtils: Key file not found at given path \"%s\"! Falling back to assetJson...")
+      keys = root.assetJson("/keys.json")
+    end
+  else keys = root.assetJson("/keys.json") end
   local keyname = item.friendlyName()
   newWeapon.damageLevelMultiplier = config.getParameter("damageLevelMultiplier", root.evalFunction("weaponDamageLevelMultiplier", config.getParameter("level", 1)))
   newWeapon.elementalType = config.getParameter("elementalType")
@@ -16,13 +29,33 @@ function Weapon:new(weaponConfig)
   newWeapon.aimOffset = config.getParameter("aimOffset") or (newWeapon.muzzleOffset[2] - 0.25) -- why is it off by 0.25? nobody knows!
   newWeapon.handGrip = config.getParameter("handGrip", "inside")
   if config.getParameter("encrypted") then
+    local decryptedData = {}
     if keys[keyname] then
-      local decryptedData = rc4.decrypt(unhexlify(encryptedData), true, keys[keyname])
-      if not decryptedData then
-        local interactData = root.assetJson("/interface/scripted/keyManager/keyManager.config")
-        interactData.openedBy = keyname
-        player.interact("ScriptPane", interactData)
-        error(string.format("ItemUtils: Decryption for item \"%s\" with key \"%s\" failed!", keyname, keys[keyname]))
+      if config.getParameter("cryptoVersion", 0) == 3 then
+        decryptedData = crypto.decrypt(encryptedData, keys[keyname])
+        if not decryptedData then
+          local interactData = root.assetJson("/interface/scripted/keyManager/keyManager.config")
+          interactData.openedBy = keyname
+          player.interact("ScriptPane", interactData)
+          error(string.format("ItemUtils: Decryption for item \"%s\" with key \"%s\" failed!", keyname, keys[keyname]))
+          return
+        end
+      else
+        decryptedData = rc4.decrypt(unhexlify(encryptedData), true, keys[keyname])
+        if not decryptedData then
+          local interactData = root.assetJson("/interface/scripted/keyManager/keyManager.config")
+          interactData.openedBy = keyname
+          player.interact("ScriptPane", interactData)
+          error(string.format("ItemUtils: Decryption for item \"%s\" with key \"%s\" failed!", keyname, keys[keyname]))
+          return
+        end
+        local descriptor = item.descriptor()
+        descriptor.parameters = sb.jsonMerge(descriptor.parameters, decryptedData)
+        descriptor.parameters.encrypted = false
+        descriptor.parameters.encryptedData = nil
+        player.giveItem(descriptor)
+        sb.logWarn("ItemUtils: ARCFOUR-encrypted item decrypted! Please re-encrypt with new system.")
+        item.consume(item.count())
         return
       end
       newWeapon.damageLevelMultiplier = decryptedData.damageLevelMultiplier or newWeapon.damageLevelMultiplier

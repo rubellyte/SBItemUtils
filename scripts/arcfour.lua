@@ -1,6 +1,7 @@
 rc4 = {}
 
 function rc4.encrypt(plaintext, key)
+  sb.logWarn("ItemUtils: RC4 module is deprecated, please upgrade your encryption!")
   if type(plaintext) == "table" then
     plaintext = table.tostring(plaintext)
   end
@@ -15,6 +16,7 @@ function rc4.encrypt(plaintext, key)
 end
 
 function rc4.decrypt(encrypted, is_table, key)
+  sb.logWarn("ItemUtils: RC4 module is deprecated, please upgrade your encryption!")
   dec_state = rc4.new(key)
   dec_state:generate(3072)
   plaintext = dec_state:cipher(encrypted)
@@ -151,5 +153,3 @@ function rc4.new(key)
 	
 	return r	
 end
-
-
