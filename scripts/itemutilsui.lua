@@ -201,7 +201,7 @@ function IUUI.openKeyManager()
 end
 
 function IUUI.updateItemFile()
-  local file_name = widget.getText("itemPathBox")
+  local file_name = widget.getText("pathEntryBox")
   if not file_name or file_name == "" then file_name = "item.json" end
   IUUI.itemFile = file_name
 end
