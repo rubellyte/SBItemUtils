@@ -94,9 +94,9 @@ function IUUI.toggleSettings()
     for i, v in ipairs(turnOff) do
       widget.setVisible(v, false)
     end
-    widget.setText("IUUIItemDir", IUUI.itemDirectory)
-    widget.setText("IUUISubdir", IUUI.itemSubdir)
-    widget.setText("IUUICanvasUpdate", IUUI.playerUpdateInterval)
+    widget.setText("itemDirBox", IUUI.itemDirectory)
+    widget.setText("subdirBox", IUUI.itemSubdir)
+    widget.setText("canvasUpdateBox", IUUI.playerUpdateInterval)
     IUUI.settingsOpen = true
   end
 end
