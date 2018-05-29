@@ -3,7 +3,7 @@ Starbound ItemUtils mod: Vanilla-friendly extensions to weapon scripts.
 
 # Installation
 - Download the [latest release](https://github.com/medeor413/SBItemUtils/releases) or clone the repository and extract the folder within to your Starbound installation's `mods` directory.
-- If you don't already have it, install Silverfeelin's [Manipulated UI](https://github.com/Silverfeelin/Starbound-ManipulatedUI/releases); ItemUtils depends on it.
+- If you don't already have it, install Silverfeelin's [QuickbarMini](https://github.com/Silverfeelin/Starbound-Quickbar-Mini/releases); ItemUtils depends on it.
 
 ### Optional (but strongly recommended):
 - Set `safeScripts` in your `starbound.config` to `false` to enable item JSON exports and faster importing.
