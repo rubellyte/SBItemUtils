@@ -155,6 +155,7 @@ end
 
 function IUUI.encryptItem()
   local itemDescriptor = player.swapSlotItem()
+  if not itemDescriptor then return end
   local to_encrypt = copy(itemDescriptor.parameters)
   local item_config = root.itemConfig(itemDescriptor)
   local key = widget.getText("keyEntryBox")
